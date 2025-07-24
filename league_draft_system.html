@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>League Baseball Draft 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Roboto+Slab:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto Slab', serif;
+            background: linear-gradient(135deg, #2d4a2b 0%, #1a2e1a 100%);
+            background-image: 
+                radial-gradient(circle at 25% 25%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(139, 195, 74, 0.1) 0%, transparent 50%);
+            color: #2d1810;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect width="60" height="60" fill="%23f5f2e8" opacity="0.03"/><circle cx="30" cy="30" r="1" fill="%23654321" opacity="0.1"/></svg>') repeat;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: linear-gradient(145deg, #f5f2e8, #e8e2d4);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 
+                inset 3px 3px 10px rgba(255,255,255,0.8),
+                inset -3px -3px 10px rgba(0,0,0,0.2),
+                0 8px 25px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+            text-align: center;
+            border: 4px solid #8b4513;
+            position: relative;
+        }
+
+        .header::before {
+            content: '🏆';
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f5f2e8;
+            padding: 0 15px;
+            font-size: 24px;
+        }
+
+        .header h1 {
+            font-family: 'Fredoka One', cursive;
+            color: #2d1810;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 2px;
+        }
+
+        .draft-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: linear-gradient(90deg, #d4af37, #ffd700, #d4af37);
+            border-radius: 8px;
+            border: 2px solid #b8860b;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .draft-info div {
+            font-weight: 700;
+            color: #2d1810;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+            text-align: center;
+        }
+
+        .draft-clock {
+            background: linear-gradient(145deg, #1a4d1a, #0d330d);
+            border: 6px solid #2d5016;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+
+        .clock-display {
+            font-family: 'Fredoka One', cursive;
+            font-size: 4em;
+            color: #ffd700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            margin-bottom: 15px;
+        }
+
+        .clock-display.warning {
+            color: #ff6b35;
+            animation: pulse 1s infinite;
+        }
+
+        .clock-display.danger {
+            color: #ff4444;
+            animation: urgentPulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes urgentPulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        .current-pick {
+            color: #f5f2e8;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+
+        .pick-info {
+            color: #ffd700;
+            font-size: 1.2em;
+        }
+
+        .draft-main {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 25px;
+        }
+
+        .player-pool {
+            background: linear-gradient(145deg, #f5f2e8, #e8e2d4);
+            border-radius: 15px;
+            border: 4px solid #8b4513;
+            box-shadow: 
+                inset 3px 3px 10px rgba(255,255,255,0.8),
+                inset -3px -3px 10px rgba(0,0,0,0.2),
+                0 8px 25px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .pool-header {
+            background: linear-gradient(90deg, #8b4513, #654321, #8b4513);
+            color: #f5f2e8;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .pool-header h2 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .pool-filters {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: linear-gradient(145deg, #d4af37, #b8860b);
+            color: #2d1810;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(145deg, #ffd700, #d4af37);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .player-search {
+            padding: 20px;
+            border-bottom: 2px solid #8b4513;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #8b4513;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .player-list {
+            height: 600px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .recent-picks {
+            background: linear-gradient(145deg, #f5f2e8, #e8e2d4);
+            border-radius: 15px;
+            border: 4px solid #8b4513;
+            padding: 20px;
+            margin-top: 25px;
+            box-shadow: 
+                inset 3px 3px 10px rgba(255,255,255,0.8),
+                inset -3px -3px 10px rgba(0,0,0,0.2),
+                0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .recent-picks h3 {
+            font-family: 'Fredoka One', cursive;
+            color: #2d1810;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .pick-item {
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #d4af37;
+        }
+
+        .auto-pick-warning {
+            background: linear-gradient(145deg, #ff6b35, #e85d04);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+            border: 3px solid #d00000;
+            box-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+            animation: warningPulse 1s infinite;
+        }
+
+        @keyframes warningPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .auto-pick-warning.hidden {
+            display: none;
+        }
+
+        @media (max-width: 1200px) {
+            .draft-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .draft-info {
+                grid-template-columns: 1fr;
+            }
+            .clock-display {
+                font-size: 3em;
+            }
+            .player-list {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏆 League Baseball Draft 2025 🏆</h1>
+            <p>Live Draft Event • Real-time Player Selection</p>
+            <div class="draft-info">
+                <div><strong>Draft Status:</strong> <span id="draftStatus">In Progress</span></div>
+                <div><strong>Round:</strong> <span id="currentRound">1</span></div>
+                <div><strong>Pick:</strong> <span id="pick-status">1</span> of <span id="totalPicks">90</span></div>
+                <div><strong>Players Left:</strong> <span id="playersRemaining">90</span></div>
+                <div><strong>Teams:</strong> 6</div>
+            </div>
+        </div>
+
+        <!-- Draft Clock -->
+        <div class="draft-clock">
+            <div class="clock-display" id="timer">30s</div>
+            <div class="current-pick">Now Picking: <span id="currentTeam">Thunder Bolts</span></div>
+            <div class="pick-info">Manager: <span id="currentManager">John Smith</span></div>
+        </div>
+
+        <!-- Auto-Pick Warning -->
+        <div class="auto-pick-warning hidden" id="autoPickWarning">
+            ⚠️ TIME RUNNING OUT! Random player will be selected in <span id="warningTime">30</span> seconds if no pick is made!
+        </div>
+
+        <!-- Main Draft Interface -->
+        <div class="draft-main">
+            <!-- Player Pool -->
+            <div class="player-pool">
+                <div class="pool-header">
+                    <h2>📋 Available Players</h2>
+                    <div class="pool-filters">
+                        <button class="filter-btn active" onclick="filterPlayers('all')">All Players</button>
+                        <button class="filter-btn" onclick="filterPlayers('infield')">Infield</button>
+                        <button class="filter-btn" onclick="filterPlayers('outfield')">Outfield</button>
+                        <button class="filter-btn" onclick="filterPlayers('pitcher')">Pitchers</button>
+                        <button class="filter-btn" onclick="filterPlayers('catcher')">Catchers</button>
+                    </div>
+                </div>
+                <div class="player-search">
+                    <input type="text" class="search-input" placeholder="🔍 Search players..." id="playerSearch">
+                </div>
+                <div class="player-list">
+                    <select id="available-players"></select>
+                    <select id="team-select"></select>
+                    <button id="submit-pick">Submit Pick</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Picks -->
+        <div class="recent-picks">
+            <h3>📝 Recent Picks</h3>
+            <div id="recentPicks">
+                <div class="pick-item">
+                    <span>Draft starting soon...</span>
+                    <small>--:--</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+<script src="/js/api.js"></script>
+<script>
+    const socket = io();
+    let timeLeft = 30;
+    let currentPick = 1;
+    let currentRound = 1;
+    let allPlayers = [];
+
+    async function loadDraft() {
+        const teams = await fetchTeams();
+        const players = await fetchPlayers();
+        const draftPicks = await fetchDraftPicks();
+        allPlayers = players; // Store players for filtering
+        const teamSelect = document.querySelector('#team-select');
+        const playerSelect = document.querySelector('#available-players');
+        const recentPicks = document.querySelector('#recentPicks');
+        teamSelect.innerHTML = '<option value="">Select Team...</option>';
+        teams.forEach(team => {
+            teamSelect.innerHTML += `<option value="${team.id}">${team.name}</option>`;
+        });
+        playerSelect.innerHTML = '<option value="">Select Player...</option>';
+        players.forEach(player => {
+            playerSelect.innerHTML += `<option value="${player.id}">${player.name} (${player.position})</option>`;
+        });
+        recentPicks.innerHTML = draftPicks.length > 0 ? draftPicks.map(pick => `
+            <div class="pick-item">Round ${pick.round_number}: ${pick.team_name} selected ${pick.player_name}<small>${new Date(pick.pick_time).toLocaleTimeString()}</small></div>
+        `).join('') : '<div class="pick-item">Draft starting soon...<small>--:--</small></div>';
+    }
+
+    async function fetchDraftPicks() {
+        try {
+            const response = await fetch('http://localhost:3000/api/draft');
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching draft picks:', error);
+            return [];
+        }
+    }
+
+    function filterPlayers(position) {
+        const playerSelect = document.querySelector('#available-players');
+        playerSelect.innerHTML = '<option value="">Select Player...</option>';
+        allPlayers.forEach(player => {
+            if (position === 'all' || 
+                (position === 'infield' && ['1B', '2B', '3B', 'SS'].includes(player.position)) ||
+                (position === 'outfield' && ['LF', 'CF', 'RF'].includes(player.position)) ||
+                (position === 'pitcher' && player.position === 'P') ||
+                (position === 'catcher' && player.position === 'C')) {
+                playerSelect.innerHTML += `<option value="${player.id}">${player.name} (${player.position})</option>`;
+            }
+        });
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`[onclick="filterPlayers('${position}')"]`).classList.add('active');
+    }
+
+    function startTimer() {
+        const timer = setInterval(() => {
+            timeLeft--;
+            document.querySelector('#timer').textContent = `${timeLeft}s`;
+            document.querySelector('#warningTime').textContent = timeLeft;
+            if (timeLeft <= 30) {
+                document.querySelector('#autoPickWarning').classList.remove('hidden');
+            }
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                autoPick();
+            }
+        }, 1000);
+    }
+
+    async function submitPick() {
+        const teamId = document.querySelector('#team-select').value;
+        const playerId = document.querySelector('#available-players').value;
+        if (!teamId || !playerId) {
+            alert('Please select a team and player!');
+            return;
+        }
+        socket.emit('draft_pick', {
+            round_number: currentRound,
+            pick_number: currentPick,
+            team_id: teamId,
+            player_id: playerId,
+            is_auto_pick: false
+        });
+        currentPick++;
+        if (currentPick > 6) {
+            currentPick = 1;
+            currentRound++;
+        }
+        timeLeft = 30;
+        document.querySelector('#autoPickWarning').classList.add('hidden');
+        startTimer();
+    }
+
+    function autoPick() {
+        socket.emit('draft_pick', {
+            round_number: currentRound,
+            pick_number: currentPick,
+            team_id: document.querySelector('#team-select').value || 1,
+            player_id: document.querySelector('#available-players').value || 1,
+            is_auto_pick: true
+        });
+        currentPick++;
+        if (currentPick > 6) {
+            currentPick = 1;
+            currentRound++;
+        }
+        timeLeft = 30;
+        document.querySelector('#autoPickWarning').classList.add('hidden');
+        startTimer();
+    }
+
+    socket.on('draft_update', (pick) => {
+        document.querySelector('#recentPicks').innerHTML = `
+            <div class="pick-item">Round ${pick.round_number}: Team ${pick.team_id} selected Player ${pick.player_id}<small>${new Date().toLocaleTimeString()}</small></div>
+        ` + document.querySelector('#recentPicks').innerHTML;
+        document.querySelector('#pick-status').textContent = currentPick;
+        document.querySelector('#currentRound').textContent = currentRound;
+        document.querySelector('#playersRemaining').textContent = 90 - (currentPick + (currentRound - 1) * 6);
+    });
+
+    document.querySelector('#submit-pick').addEventListener('click', submitPick);
+    window.onload = () => {
+        loadDraft();
+        startTimer();
+    };
+</script>
+</body>
+</html>
